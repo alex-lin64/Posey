@@ -1,6 +1,6 @@
 opencv-python
 matplotlib
 tensorflow
-
-# maybe not required
 mediapipe
+numpy
+pandas
