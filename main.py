@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 
-from utils.processing import clean_raw_landmarks
+from utils.processing import preprocess
 
 
 def main():
@@ -30,10 +30,16 @@ def main():
             results = pose.process(frame)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-            # squat classifier inference
-            input_data = clean_raw_landmarks(results.pose_landmarks.landmark)
-            print(input_data)
-            print(input_data.shape)
+            # squat classifier - set input data
+            input_data = preprocess(results.pose_landmarks.landmark)
+            interpreter.set_tensor(input_details[0]['index'], input_data)
+
+            # squat classifier - invoke inference
+            interpreter.invoke()
+
+            # squat classifier - invoke inference
+            output_data = interpreter.get_tensor(output_details[0]['index'])
+            print(output_data)
 
             # visualize pose
             mp_drawing.draw_landmarks(
