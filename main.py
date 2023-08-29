@@ -32,14 +32,16 @@ def main():
 
             # squat classifier - set input data
             input_data = preprocess(results.pose_landmarks.landmark)
-            interpreter.set_tensor(input_details[0]['index'], input_data)
+            # interpreter.set_tensor(input_details[0]['index'], input_data)
 
-            # squat classifier - invoke inference
-            interpreter.invoke()
+            # print('hi')
+            # # squat classifier - invoke inference
+            # interpreter.invoke()
+            # print('bye')
 
-            # squat classifier - invoke inference
-            output_data = interpreter.get_tensor(output_details[0]['index'])
-            print(output_data)
+            # # squat classifier - invoke inference
+            # output_data = interpreter.get_tensor(output_details[0]['index'])
+            # print(output_data)
 
             # visualize pose
             mp_drawing.draw_landmarks(
