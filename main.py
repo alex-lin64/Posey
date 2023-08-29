@@ -3,6 +3,8 @@ import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 
+from utils.processing import clean_raw_landmarks
+
 
 def main():
     # init mp pose objects
@@ -29,8 +31,9 @@ def main():
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
             # squat classifier inference
-            print(input_details)
-            print(output_details)
+            input_data = clean_raw_landmarks(results.pose_landmarks.landmark)
+            print(input_data)
+            print(input_data.shape)
 
             # visualize pose
             mp_drawing.draw_landmarks(

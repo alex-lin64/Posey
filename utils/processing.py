@@ -18,6 +18,7 @@ def clean_raw_landmarks(keypoints):
     cleaned_kp = np.array([[x.x, x.y, x.z] for x in keypoints], dtype="float64").flatten() 
     cleaned_kp = cleaned_kp.reshape(1, len(cleaned_kp))
     
+    return cleaned_kp
 
 
 def preprocess():
