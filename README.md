@@ -7,7 +7,7 @@
 
 # CSV Format
 
-There are 64 values total, with the first 63 values being keypoint detections and the last value for the binary classification.
+There are 64 values total, with the first 63 values being keypoint detections and the last value for the binary classification.  1 is for the up position, 0 indicates a down position.
 
 Each keypoint detection has 3 values, x-coor, y-coor, z-coor, in that order, such that given the i-th keypoint the csv is formatted as (with a header representing column indices) 
 
