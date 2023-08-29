@@ -47,5 +47,7 @@ https://medium.com/@cavaldovinos/human-pose-estimation-pose-similarity-dc8bf9f78
 
 https://www.iieta.org/journals/ts/paper/10.18280/ts.390111#:~:text=PoseNet%20provides%20a%20total%20of,and%2070%20in%20the%20face.
 
+https://www.tensorflow.org/lite/tutorials/pose_classification
+
 
 
