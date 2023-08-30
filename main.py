@@ -30,22 +30,42 @@ def main():
             results = pose.process(frame)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
+            # if webcam opens late, results will be None
+            if not results.pose_landmarks:
+                cv2.imshow("Webcam Feed", frame)
+                # quit by pressing 'q'
+                if cv2.waitKey(10) & 0xFF == ord('q'):
+                    break
+                continue
+
             # squat classifier - set input data
             input_data = preprocess(results.pose_landmarks.landmark)
 
             try:
                 interpreter.set_tensor(input_details[0]['index'], input_data)
-
                 # squat classifier - invoke inference
                 interpreter.invoke()
 
                 # squat classifier - invoke inference
                 # index 0 is down position, index 1 is up position
                 output_data = interpreter.get_tensor(output_details[0]['index'])
+
+                # interpret results
+                position = "up" if output_data[0][1] >= output_data[0][0] else "down"
+
+                # display squat classification
+                cv2.putText(
+                    img=frame,
+                    text=position,
+                    org=(10, frame.shape[0] - 10),
+                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                    fontScale=1,
+                    color=(255,255,255),
+                    thickness=1,
+                    lineType=cv2.LINE_AA
+                )
             except Exception as e:
                 print(e)
-
-
 
             # visualize pose
             mp_drawing.draw_landmarks(
