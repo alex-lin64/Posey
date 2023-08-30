@@ -7,6 +7,9 @@ from utils.processing import preprocess
 
 
 def main():
+    """
+    Main loop for Posey
+    """
     # init mp pose objects
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
@@ -44,10 +47,10 @@ def main():
             input_data = preprocess(results.pose_landmarks.landmark)
 
             try:
+                # set input data to model
                 interpreter.set_tensor(input_details[0]['index'], input_data)
                 # squat classifier - invoke inference
                 interpreter.invoke()
-
                 # squat classifier - invoke inference
                 # index 0 is down position, index 1 is up position
                 output_data = interpreter.get_tensor(output_details[0]['index'])
@@ -67,7 +70,7 @@ def main():
                     lineType=cv2.LINE_AA
                 )
             except Exception as e:
-                print(e)
+                print(f'Inference error: {e}')
 
             # visualize pose
             mp_drawing.draw_landmarks(
