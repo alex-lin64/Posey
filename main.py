@@ -57,24 +57,23 @@ def main():
                 down, up = output_data[0][0], output_data[0][1]
                 # interpret results
                 position = "up" if up >= down else "down"
-                probability = str(up) if up >= down else str(down)
+                probability = str(round(up, 2)) if up >= down else str(round(down, 2))
                 # display squat classification
                 cv2.putText(
                     img=frame,
                     text=position,
-                    org=(10, frame.shape[0] - 10),
+                    org=(10, frame.shape[0] - 40),
                     fontFace=cv2.FONT_HERSHEY_DUPLEX,
                     fontScale=1,
                     color=(255,255,255),
                     thickness=1,
                     lineType=cv2.LINE_AA
                 )
-
                 # display squat classification probability
                 cv2.putText(
                     img=frame,
                     text=probability,
-                    org=(10, frame.shape[0] - 20),
+                    org=(10, frame.shape[0] - 10),
                     fontFace=cv2.FONT_HERSHEY_DUPLEX,
                     fontScale=1,
                     color=(255,255,255),
