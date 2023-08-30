@@ -5,3 +5,4 @@ mediapipe
 numpy
 pandas
 sklearn
+pyfirmata

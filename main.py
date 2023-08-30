@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
+import pyfirmata
 
 from utils.processing import preprocess
 
@@ -23,6 +24,16 @@ def main():
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    # init squat count vars
+    squat_count = 0
+    prev_position = "up"
+    position = "up"
+    # only init arduino if it is being used
+    board = None
+    try:
+        board = pyfirmata.Arduino('COM3')
+    except Exception as e:
+        print(f"Arduino exception: {e}")
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -56,8 +67,26 @@ def main():
                 output_data = interpreter.get_tensor(output_details[0]['index'])
                 down, up = output_data[0][0], output_data[0][1]
                 # interpret results
+                prev_position = position
                 position = "up" if up >= down else "down"
                 probability = str(round(up, 2)) if up >= down else str(round(down, 2))
+
+                # count squats
+                if position == "down" and prev_position == "up":
+                    squat_count += 1
+
+                # display squat classification
+                cv2.putText(
+                    img=frame,
+                    text=f"Count: {str(squat_count)}",
+                    org=(10, 10),
+                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                    fontScale=1,
+                    color=(255,255,255),
+                    thickness=1,
+                    lineType=cv2.LINE_AA
+                )
+
                 # display squat classification
                 cv2.putText(
                     img=frame,
