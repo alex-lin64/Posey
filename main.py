@@ -79,7 +79,7 @@ def main():
                 cv2.putText(
                     img=frame,
                     text=f"Count: {str(squat_count)}",
-                    org=(10, 10),
+                    org=(10, 30),
                     fontFace=cv2.FONT_HERSHEY_DUPLEX,
                     fontScale=1,
                     color=(255,255,255),
