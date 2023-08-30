@@ -54,15 +54,27 @@ def main():
                 # squat classifier - invoke inference
                 # index 0 is down position, index 1 is up position
                 output_data = interpreter.get_tensor(output_details[0]['index'])
-
+                down, up = output_data[0][0], output_data[0][1]
                 # interpret results
-                position = "up" if output_data[0][1] >= output_data[0][0] else "down"
-
+                position = "up" if up >= down else "down"
+                probability = str(up) if up >= down else str(down)
                 # display squat classification
                 cv2.putText(
                     img=frame,
                     text=position,
                     org=(10, frame.shape[0] - 10),
+                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                    fontScale=1,
+                    color=(255,255,255),
+                    thickness=1,
+                    lineType=cv2.LINE_AA
+                )
+
+                # display squat classification probability
+                cv2.putText(
+                    img=frame,
+                    text=probability,
+                    org=(10, frame.shape[0] - 20),
                     fontFace=cv2.FONT_HERSHEY_DUPLEX,
                     fontScale=1,
                     color=(255,255,255),
