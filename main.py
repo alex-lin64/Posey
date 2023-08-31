@@ -13,12 +13,15 @@ from utils.processing import preprocess
 # global vars
 SQUAT_COUNT = 0
 POSITION = 1  # 1 is up position, 0 is down
+PROBABILITY = 0.00
+PUNISH_CLOCK = None
 
 
 def update_count():
     """
-    Monitors current squat position and updates the squat count accordingly.  Built
-    to run as a daemon thread
+    Monitors current squat position and updates the squat count accordingly.  
+    
+    Runs as a daemon thread
     """
     global SQUAT_COUNT
     global POSITION
@@ -30,11 +33,39 @@ def update_count():
         prev_pos = POSITION
         time.sleep(0.1)
 
+def punish():
+    """
+    Monitors squat count, will activate punshiment feature if squat count does 
+    not increase every five seconds
+    """
+    global PUNISH_CLOCK
+    board = None
+
+    # only init arduino if it is being used
+    while not board:
+        try:
+            board = pyfirmata.Arduino('COM3')
+        except Exception as e:
+            print(f"Waiting for arduino connection... | {e}")
+        time.sleep(7)
+    
+    # once board is connected serially, check for punishment
+    prev_squat_count = SQUAT_COUNT
+    while True:
+
+        board.digital[7].write(1)
+        time.sleep(1)
+        board.digital[7].write(0)
+        time.sleep(0.5)
+
+
+
 def main():
     """
     Main loop for Posey
     """
     global POSITION
+    global PROBABILITY
 
     # init mp pose objects
     mp_drawing = mp.solutions.drawing_utils
@@ -53,16 +84,15 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
+    # start squat count daemon
     print('Starting squat count task...')
     count_daemon = Thread(target=update_count, daemon=True, name='squat_count')
     count_daemon.start()
 
-    # only init arduino if it is being used
-    board = None
-    try:
-        board = pyfirmata.Arduino('COM3')
-    except Exception as e:
-        print(f"Arduino exception: {e}")
+    # start punish daemon
+    print('Starting punish task...')
+    punish_daemon = Thread(target=punish, daemon=True, name='punish')
+    punish_daemon.start()
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -75,7 +105,7 @@ def main():
             results = pose.process(frame)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-            # if webcam opens late, results will be None
+            # fixes webcam opening late bug
             if not results.pose_landmarks:
                 cv2.imshow("Webcam Feed", frame)
                 # quit by pressing 'q'
@@ -97,52 +127,46 @@ def main():
                 output_data = interpreter.get_tensor(output_details[0]['index'])
                 down, up = output_data[0][0], output_data[0][1]
 
-                # interpret results
-
                 # prev_position = position
                 POSITION = 1 if up >= down else 0
-                probability = str(round(up, 2)) if up >= down else str(round(down, 2))
+                PROBABILITY = str(round(up, 2)) if up >= down else str(round(down, 2))
 
-                # # count squats
-                # if position == "down" and prev_position == "up":
-                #     squat_count += 1
-
-                # display squat classification
-                cv2.putText(
-                    img=frame,
-                    text=f"Count: {str(SQUAT_COUNT)}",
-                    org=(10, 30),
-                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
-                    fontScale=1,
-                    color=(255,255,255),
-                    thickness=1,
-                    lineType=cv2.LINE_AA
-                )
-
-                # display squat classification
-                cv2.putText(
-                    img=frame,
-                    text=("up" if POSITION else "down"),
-                    org=(10, frame.shape[0] - 40),
-                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
-                    fontScale=1,
-                    color=(255,255,255),
-                    thickness=1,
-                    lineType=cv2.LINE_AA
-                )
-                # display squat classification probability
-                cv2.putText(
-                    img=frame,
-                    text=probability,
-                    org=(10, frame.shape[0] - 10),
-                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
-                    fontScale=1,
-                    color=(255,255,255),
-                    thickness=1,
-                    lineType=cv2.LINE_AA
-                )
             except Exception as e:
                 print(f'Inference error: {e}')
+
+            # display squat classification
+            cv2.putText(
+                img=frame,
+                text=f"Count: {str(SQUAT_COUNT)}",
+                org=(10, 30),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=1,
+                color=(255, 143, 23),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
+            # display squat classification
+            cv2.putText(
+                img=frame,
+                text=("up" if POSITION else "down"),
+                org=(10, frame.shape[0] - 40),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=1,
+                color=(255, 143, 23),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
+            # display squat classification probability
+            cv2.putText(
+                img=frame,
+                text=PROBABILITY,
+                org=(10, frame.shape[0] - 10),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=1,
+                color=(255, 143, 23),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
 
             # visualize pose
             mp_drawing.draw_landmarks(
