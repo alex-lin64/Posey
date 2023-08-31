@@ -42,11 +42,13 @@ def punish():
     board = None
 
     # only init arduino if it is being used
+    print(f"Waiting for arduino connection...")
     while not board:
         try:
             board = pyfirmata.Arduino('COM3')
+            print(f"Arduino connected!")
         except Exception as e:
-            print(f"Waiting for arduino connection... | {e}")
+            continue
         time.sleep(7)
     
     # once board is connected serially, check for punishment
