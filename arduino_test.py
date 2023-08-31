@@ -7,7 +7,7 @@ def board_test():
 
     while True:
         board.digital[7].write(1)
-        time.sleep(0.5)
+        time.sleep(1)
         board.digital[7].write(0)
         time.sleep(0.5)
 
