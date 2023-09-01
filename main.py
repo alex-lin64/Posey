@@ -5,6 +5,7 @@ import tensorflow as tf
 import pyfirmata
 
 from threading import Thread
+from threading import Timer
 import time
 
 from utils.processing import preprocess
@@ -15,6 +16,7 @@ SQUAT_COUNT = 0
 POSITION = 1  # 1 is up position, 0 is down
 PROBABILITY = 0.00
 PUNISH_CLOCK = None
+BOARD = None
 
 
 def update_count():
@@ -35,31 +37,53 @@ def update_count():
 
 def punish():
     """
+    Sends serial signal to arduino to open relay
+    """
+    BOARD.digital[7].write(1)
+    time.sleep(1)
+    BOARD.digital[7].write(0)
+
+def negative_reinforcement():
+    """
     Monitors squat count, will activate punshiment feature if squat count does 
     not increase every five seconds
     """
     global PUNISH_CLOCK
-    board = None
+    global BOARD
 
     # only init arduino if it is being used
     print(f"Waiting for arduino connection...")
-    while not board:
+    while not BOARD:
         try:
-            board = pyfirmata.Arduino('COM3')
+            BOARD = pyfirmata.Arduino('COM3')
             print(f"Arduino connected!")
         except Exception as e:
             continue
         time.sleep(7)
     
+    # timer class
+    def newTimer():
+        global t
+        t = Timer(5.0, punish)
+    # init timer
+    newTimer()
+    
     # once board is connected serially, check for punishment
     prev_squat_count = SQUAT_COUNT
     while True:
-
-        board.digital[7].write(1)
-        time.sleep(1)
-        board.digital[7].write(0)
-        time.sleep(0.5)
-
+        # timer
+        if not t.is_alive():
+            # gives time for previous punishment to execute
+            time.sleep(1)
+            newTimer()
+            print("started new timer")
+        # check for changes in squat count
+        if SQUAT_COUNT > prev_squat_count:
+            prev_squat_count = SQUAT_COUNT
+            t.cancel()
+            newTimer()
+            t.start()
+            print("reset timer")
 
 
 def main():
@@ -83,8 +107,8 @@ def main():
 
     # start video capture
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     # start squat count daemon
     print('Starting squat count task...')
@@ -93,7 +117,7 @@ def main():
 
     # start punish daemon
     print('Starting punish task...')
-    punish_daemon = Thread(target=punish, daemon=True, name='punish')
+    punish_daemon = Thread(target=negative_reinforcement, daemon=True, name='punish')
     punish_daemon.start()
 
     # start live stream 
