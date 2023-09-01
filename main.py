@@ -15,8 +15,9 @@ from utils.processing import preprocess
 SQUAT_COUNT = 0
 POSITION = 1  # 1 is up position, 0 is down
 PROBABILITY = 0.00
-PUNISH_CLOCK = None
+PUNISH_CLOCK = 10
 BOARD = None
+SHUTDOWN = False  # shut down main loop within negative_reinforcement()
 
 
 def update_count():
@@ -47,6 +48,8 @@ def negative_reinforcement():
     """
     Monitors squat count, will activate punshiment feature if squat count does 
     not increase every five seconds
+
+    Runs as a daemon thread
     """
     global PUNISH_CLOCK
     global BOARD
@@ -61,29 +64,32 @@ def negative_reinforcement():
             continue
         time.sleep(7)
     
-    # timer class
+    # timer class - done here as to make sure it is a daemon
     def newTimer():
         global t
-        t = Timer(5.0, punish)
+        t = Timer(10.0, punish)
+        return time.time()
     # init timer
     newTimer()
     
     # once board is connected serially, check for punishment
     prev_squat_count = SQUAT_COUNT
-    while True:
+    while not SHUTDOWN:
         # timer
         if not t.is_alive():
             # gives time for previous punishment to execute
             time.sleep(1)
-            newTimer()
-            print("started new timer")
+            start_time = newTimer()
+            t.start()
         # check for changes in squat count
-        if SQUAT_COUNT > prev_squat_count:
+        elif SQUAT_COUNT > prev_squat_count:
             prev_squat_count = SQUAT_COUNT
             t.cancel()
-            newTimer()
+            start_time = newTimer()
             t.start()
-            print("reset timer")
+        # calculate time left before punishment
+        time_left = 10 - int(time.time() - start_time)
+        PUNISH_CLOCK = time_left if time_left >= 0 else 0
 
 
 def main():
@@ -92,6 +98,7 @@ def main():
     """
     global POSITION
     global PROBABILITY
+    global SHUTDOWN
 
     # init mp pose objects
     mp_drawing = mp.solutions.drawing_utils
@@ -107,18 +114,16 @@ def main():
 
     # start video capture
     cap = cv2.VideoCapture(0)
-    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     # start squat count daemon
     print('Starting squat count task...')
     count_daemon = Thread(target=update_count, daemon=True, name='squat_count')
     count_daemon.start()
 
-    # start punish daemon
-    print('Starting punish task...')
+    # init punishment thread, only start when key 'p' (in main loop)
     punish_daemon = Thread(target=negative_reinforcement, daemon=True, name='punish')
-    punish_daemon.start()
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -194,6 +199,18 @@ def main():
                 lineType=cv2.LINE_AA
             )
 
+            # display punish clock
+            cv2.putText(
+                img=frame,
+                text=f"Squirt: {str(PUNISH_CLOCK)}",
+                org=(10, 60),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=1,
+                color=(255, 143, 23),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
+
             # visualize pose
             mp_drawing.draw_landmarks(
                 frame,
@@ -205,10 +222,19 @@ def main():
 
             cv2.imshow("Webcam Feed", frame)
 
-            # quit by pressing 'q'
-            if cv2.waitKey(10) & 0xFF == ord('q'):
+            k = cv2.waitKey(10)
+            if k == ord('p'):
+                # start punish daemon
+                print('Starting punish task...')
+                punish_daemon.start()
+            elif k == ord('m'):
+                print('Stopping punish task...')
+                
+            elif k == ord('q'):
+                # quit by pressing 'q'
                 break
 
+    SHUTDOWN = True
     cap.release()
     cv2.destroyAllWindows()
 
