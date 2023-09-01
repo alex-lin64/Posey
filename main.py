@@ -4,11 +4,12 @@ import numpy as np
 import tensorflow as tf
 import pyfirmata
 
-from threading import Thread
-from threading import Timer
+from threading import Thread, Timer, Event
+
 import time
 
 from utils.processing import preprocess
+from utils.punishment import punish
 
 
 # global vars
@@ -17,7 +18,6 @@ POSITION = 1  # 1 is up position, 0 is down
 PROBABILITY = 0.00
 PUNISH_CLOCK = 10
 BOARD = None
-SHUTDOWN = False  # shut down main loop within negative_reinforcement()
 
 
 def update_count():
@@ -36,35 +36,28 @@ def update_count():
         prev_pos = POSITION
         time.sleep(0.1)
 
-def punish():
-    """
-    Sends serial signal to arduino to open relay
-    """
-    BOARD.digital[7].write(1)
-    time.sleep(1)
-    BOARD.digital[7].write(0)
 
-def negative_reinforcement():
+def negative_reinforcement(event):
     """
     Monitors squat count, will activate punshiment feature if squat count does 
     not increase every five seconds
 
-    Runs as a daemon thread
+    :params:
+        - event: 
     """
     global PUNISH_CLOCK
     global BOARD
 
     # only init arduino if it is being used
     print(f"Waiting for arduino connection...")
-    while not BOARD:
-        try:
-            BOARD = pyfirmata.Arduino('COM3')
-            print(f"Arduino connected!")
-        except Exception as e:
-            continue
-        time.sleep(7)
-    
-    # timer class - done here as to make sure it is a daemon
+    try:
+        BOARD = pyfirmata.Arduino('COM3')
+        print(f"Arduino connected!")
+    except Exception as e:
+        print("Arduino board not found...try again")
+        exit(1)
+
+    # timer class - done here as to make sure global is in scope
     def newTimer():
         global t
         t = Timer(10.0, punish)
@@ -74,7 +67,7 @@ def negative_reinforcement():
     
     # once board is connected serially, check for punishment
     prev_squat_count = SQUAT_COUNT
-    while not SHUTDOWN:
+    while not event.isSet():
         # timer
         if not t.is_alive():
             # gives time for previous punishment to execute
@@ -98,7 +91,6 @@ def main():
     """
     global POSITION
     global PROBABILITY
-    global SHUTDOWN
 
     # init mp pose objects
     mp_drawing = mp.solutions.drawing_utils
@@ -122,8 +114,9 @@ def main():
     count_daemon = Thread(target=update_count, daemon=True, name='squat_count')
     count_daemon.start()
 
-    # init punishment thread, only start when key 'p' (in main loop)
-    punish_daemon = Thread(target=negative_reinforcement, daemon=True, name='punish')
+    # init punishment thread, start with key 'p', kills thread with 'm'\
+    event = Event()
+    punish_task = Thread(target=negative_reinforcement, args=(event,), name='punish')
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -225,16 +218,18 @@ def main():
             k = cv2.waitKey(10)
             if k == ord('p'):
                 # start punish daemon
+                event.clear()
                 print('Starting punish task...')
-                punish_daemon.start()
+                punish_task.start()
             elif k == ord('m'):
                 print('Stopping punish task...')
-                
+                event.set()
             elif k == ord('q'):
-                # quit by pressing 'q'
-                break
+                # quit
+                break 
 
-    SHUTDOWN = True
+    event.set() 
+    time.sleep(0.2)  # gives time for negative_reinforcement to shutdown
     cap.release()
     cv2.destroyAllWindows()
 
