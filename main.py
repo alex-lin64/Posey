@@ -81,7 +81,9 @@ def negative_reinforcement(event):
         # calculate time left before punishment
         time_left = 10 - int(time.time() - start_time)
         PUNISH_CLOCK = time_left if time_left >= 0 else 0
-
+        time.sleep(0.5)
+    # clean up timer thread
+    t.cancel()
 
 def main():
     """
@@ -215,13 +217,20 @@ def main():
 
             k = cv2.waitKey(10)
             if k == ord('p'):
-                # start punish daemon
-                event.clear()
-                print('Starting punish task...')
-                punish_task.start()
+                try:
+                    if punish_task.is_alive():
+                        print("Task is already started, end the current task by pressing m")
+                        continue
+                    # start punish daemon
+                    event.clear()
+                    print('Starting punish task...')
+                    punish_task.start()
+                except Exception as e:
+                    print(e)
             elif k == ord('m'):
                 print('Stopping punish task...')
                 event.set()
+                punish_task.join()
             elif k == ord('q'):
                 # quit
                 break 
