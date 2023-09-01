@@ -17,7 +17,6 @@ SQUAT_COUNT = 0
 POSITION = 1  # 1 is up position, 0 is down
 PROBABILITY = 0.00
 PUNISH_CLOCK = 10
-BOARD = None
 
 
 def update_count():
@@ -46,12 +45,11 @@ def negative_reinforcement(event):
         - event: 
     """
     global PUNISH_CLOCK
-    global BOARD
 
     # only init arduino if it is being used
     print(f"Waiting for arduino connection...")
     try:
-        BOARD = pyfirmata.Arduino('COM3')
+        board = pyfirmata.Arduino('COM3')
         print(f"Arduino connected!")
     except Exception as e:
         print("Arduino board not found...try again")
@@ -60,7 +58,7 @@ def negative_reinforcement(event):
     # timer class - done here as to make sure global is in scope
     def newTimer():
         global t
-        t = Timer(10.0, punish)
+        t = Timer(10.0, punish, args=(board,))
         return time.time()
     # init timer
     newTimer()
