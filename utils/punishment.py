@@ -16,8 +16,7 @@ class NegativeReinforcement():
         :params:
             - rest_time: int, the amount of time to do a squat before the 
                 punishment is activated
-            - evebt: threading.Event, signals for thread to exit
-        
+            - event: threading.Event, signals for thread to exit
         """
         self.rest_time = rest_time
         self.time_left = 10
@@ -40,6 +39,10 @@ class NegativeReinforcement():
     def init_board(self):
         """
         Connects arduino board to the thread
+
+        :returns:
+            - True, if board successfully connects, False if board is already 
+                connected or an exception is thrown
         """
         # if boarded already connected or punishment already runnning 
         if self._board:
@@ -96,12 +99,18 @@ class NegativeReinforcement():
         """
         # if board is not connected
         if not self._board:
-            print("Error: please connect arduino before starting the punishment thread.")
+            print("Error: no board detected.  Punish thread will be paused.  Please connect arduino first and then restart punishment (press key 'u').")
+            self._paused = True
             return
-        # if board is connected
-        board.digital[7].write(1)
-        time.sleep(1)
-        board.digital[7].write(0)
+        try:
+            # if board is connected
+            board.digital[7].write(1)
+            time.sleep(1)
+            board.digital[7].write(0)
+        except Exception as e:
+            print(f"Arduino error: {e}")
+            print("Pausing punish thread.  Please reconnect arduino and then restart punishment with key 'u').")
+            self._paused = True
 
     def negative_reinforcement(self, event):
         """
@@ -116,9 +125,11 @@ class NegativeReinforcement():
         while not event.isSet():
             # paused state
             if self._paused:
+                if self._timer.is_alive():
+                    self._timer.cancel()
                 time.sleep(0.5)
                 continue
-
+            # timer thread dead means timer finished or hasn't started
             if not self._timer.is_alive():
                 # gives time for previous punishment to execute
                 time.sleep(0.5)

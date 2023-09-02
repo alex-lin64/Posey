@@ -165,7 +165,6 @@ def main():
             if k == ord('u'):
                 if not punish_daemon.init_board():
                     continue
-
                 print('Starting punish task...')
                 punish_daemon.unpause()
             elif k == ord('p'):
@@ -173,15 +172,11 @@ def main():
                 punish_daemon.pause()
             elif k == ord('q'):
                 # quit
+                event.set()  # signals punish thread to exit, put here to migitage punishment executing after exiting
                 break 
-    
 
     stream.stop()
     cv2.destroyAllWindows()
-
-
-    event.set()  # signals negative reinforcement thread to exit
-
     time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
 
 
