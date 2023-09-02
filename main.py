@@ -10,7 +10,7 @@ import time
 
 from utils.processing import preprocess
 from utils.punishment import punish
-from utils.squat_count import SquatCounter
+from utils.squat_counter import SquatCounter
 from utils.webstreamer import WebcamStream
 
 
