@@ -212,6 +212,7 @@ Project Link: [https://github.com/alex-lin64/Squatty](https://github.com/alex-li
 * [Human Pose Estimation: Pose Similarity](https://medium.com/@cavaldovinos/human-pose-estimation-pose-similarity-dc8bf9f78556)
 * [Comparative Analysis of OpenPose, PoseNet, and MoveNet Models for Pose Estimation in Mobile Devices](https://www.iieta.org/journals/ts/paper/10.18280/ts.390111#:~:text=PoseNet%20provides%20a%20total%20of,and%2070%20in%20the%20face.)
 * [Human Pose Classification with MoveNet and TensorFlow Lite](https://www.tensorflow.org/lite/tutorials/pose_classification)
+* [Nicholas Renotte @ Yotube](https://www.youtube.com/@NicholasRenotte)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
