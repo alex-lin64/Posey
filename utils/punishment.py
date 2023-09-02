@@ -8,7 +8,6 @@ class NegativeReinforcement():
     Monitors squat count to ensure squats are performed in orderly manner, 
     or else...
     """
-
     def __init__(self, rest_time, event):
         """
         Constructor

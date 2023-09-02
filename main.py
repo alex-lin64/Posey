@@ -26,7 +26,8 @@ def main():
     mp_pose = mp.solutions.pose
 
     # load TFLite model, allocate tensors
-    interpreter = tf.lite.Interpreter(model_path='model\\tf_lite_model\\squat_classifier.tflite')
+    model_path = 'model\\tf_lite_model\\squat_classifier_v2.tflite'
+    interpreter = tf.lite.Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
 
     # Get input and output tensors.
