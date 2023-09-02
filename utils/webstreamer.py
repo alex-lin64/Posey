@@ -3,10 +3,15 @@ from threading import Thread
 
 
 class WebcamStream:
-    
+    """
+    Webstreamer, captures frames from src with cv2, runs as daemon thread
+    """
     def __init__(self, src=0):
         """
-        Multithreaded webstreamer, runs as daemon thread
+        Constructor
+
+        :params:
+            - src: camera source to capture frames from, default 0
         """
         self.src = src # default 0 for main camera 
         
@@ -61,7 +66,10 @@ class WebcamStream:
 
     def read(self):
         """
-        Returns the next frame
+        Returns the current frame
+
+        :returns:
+            - The current frame 
         """
         return self.frame
 

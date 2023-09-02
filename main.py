@@ -2,79 +2,24 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
-import pyfirmata
 
-from threading import Thread, Timer, Event
+from threading import Event
 import time
 
 from utils.processing import preprocess
-from utils.punishment import punish
 from utils.squat_counter import SquatCounter
 from utils.webstreamer import WebcamStream
+from utils.punishment import NegativeReinforcement
 
-
-# global vars
-SQUAT_COUNT = 0
-PUNISH_CLOCK = 10
-
-
-def negative_reinforcement(event):
-    """
-    Monitors squat count, will activate punshiment feature if squat count does 
-    not increase every five seconds
-
-    :params:
-        - event: 
-    """
-    global PUNISH_CLOCK
-
-    # only init arduino if it is being used
-    print(f"Waiting for arduino connection...")
-    try:
-        board = pyfirmata.Arduino('COM3')
-        print(f"Arduino connected!")
-    except Exception as e:
-        print("Arduino board not found...try again")
-        exit(0)
-
-    # timer class - done here as to make sure global is in scope
-    def newTimer():
-        global t
-        t = Timer(10.0, punish, args=(board,))
-        return time.time()
-    # init timer
-    newTimer()
-    
-    # once board is connected serially, check for punishment
-    prev_squat_count = SQUAT_COUNT
-    while not event.isSet():
-        # timer
-        if not t.is_alive():
-            # gives time for previous punishment to execute
-            time.sleep(1)
-            start_time = newTimer()
-            t.start()
-        # check for changes in squat count
-        elif SQUAT_COUNT > prev_squat_count:
-            prev_squat_count = SQUAT_COUNT
-            t.cancel()
-            start_time = newTimer()
-            t.start()
-        # calculate time left before punishment
-        time_left = 10 - int(time.time() - start_time)
-        PUNISH_CLOCK = time_left if time_left >= 0 else 0
-        time.sleep(0.5)
-    # clean up timer thread
-    t.cancel()
 
 def main():
     """
     Main loop for Posey
     """
-
-    # init displayed vars
+    # init internal vars
     probabilty = 0.0
     position = 1
+    rest_time = 10.0
 
     # init mp pose objects
     mp_drawing = mp.solutions.drawing_utils
@@ -106,9 +51,15 @@ def main():
         print(f"SquatCounter error: {e}")
         exit(0)
 
-    # init punishment thread, start with key 'p', kills thread with 'm'\
-    event = Event()
-    punish_task = Thread(target=negative_reinforcement, args=(event,), name='punish')
+    try:
+        # init punishment thread, unpause with key 'u', pause thread with 'p'\
+        print("Initializing punishment thread")
+        event = Event()
+        punish_daemon = NegativeReinforcement(rest_time=rest_time, event=event)
+        punish_daemon.start()
+    except Exception as e:
+        print(f"NegativeReinforcement error: {e}")
+        exit(0)
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -149,6 +100,7 @@ def main():
 
                 # pass new position to squat counter thread
                 count_daemon.position.put(position)
+                punish_daemon.count = count_daemon.squat_count
             except Exception as e:
                 print(f'Inference error: {e}')
 
@@ -185,12 +137,23 @@ def main():
                 thickness=2,
                 lineType=cv2.LINE_AA
             )
-
             # display punish clock
             cv2.putText(
                 img=frame,
-                text=f"Squirt: {str(PUNISH_CLOCK)}",
+                text=f"Squirt: {str(punish_daemon.time_left)}",
                 org=(10, 60),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=1,
+                color=(255, 143, 23),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
+            # display punishment state
+            state = "Paused" if punish_daemon._paused else "Active"
+            cv2.putText(
+                img=frame,
+                text=f"Punishment: {state}",
+                org=(10, 90),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
                 color=(255, 143, 23),
@@ -210,30 +173,22 @@ def main():
             cv2.imshow("Webcam Feed", frame)
 
             k = cv2.waitKey(10)
-            if k == ord('p'):
-                try:
-                    if punish_task.is_alive():
-                        print("Task is already started, end the current task by pressing m")
-                        continue
-                    event.clear()
-                    print('Starting punish task...')
-                    punish_task.start()
-                except Exception as e:
-                    print(e)
-            elif k == ord('m'):
-                print('Stopping punish task...')
-                event.set()
-                punish_task.join()
+            if k == ord('u'):
+                print('Starting punish task...')
+                punish_daemon.unpause()
+            elif k == ord('p'):
+                print('Pausing punish task...')
+                punish_daemon.pause()
             elif k == ord('q'):
                 # quit
+                print("Cleaning up threads")
+                event.set()  # signals punish thread to exit, put here to migitage punishment executing after exiting
                 break 
-    
 
     stream.stop()
     cv2.destroyAllWindows()
-
-    event.set() 
     time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
+    print("Sucessfully exited!")
 
 
 if __name__ == '__main__':
