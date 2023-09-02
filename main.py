@@ -137,12 +137,23 @@ def main():
                 thickness=2,
                 lineType=cv2.LINE_AA
             )
-
             # display punish clock
             cv2.putText(
                 img=frame,
                 text=f"Squirt: {str(punish_daemon.time_left)}",
                 org=(10, 60),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=1,
+                color=(255, 143, 23),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
+            # display punishment state
+            state = "Paused" if punish_daemon._paused else "Active"
+            cv2.putText(
+                img=frame,
+                text=f"Punishment: {state}",
+                org=(10, 90),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
                 color=(255, 143, 23),
@@ -163,8 +174,6 @@ def main():
 
             k = cv2.waitKey(10)
             if k == ord('u'):
-                if not punish_daemon.init_board():
-                    continue
                 print('Starting punish task...')
                 punish_daemon.unpause()
             elif k == ord('p'):
@@ -172,12 +181,14 @@ def main():
                 punish_daemon.pause()
             elif k == ord('q'):
                 # quit
+                print("Cleaning up threads")
                 event.set()  # signals punish thread to exit, put here to migitage punishment executing after exiting
                 break 
 
     stream.stop()
     cv2.destroyAllWindows()
     time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
+    print("Sucessfully exited!")
 
 
 if __name__ == '__main__':

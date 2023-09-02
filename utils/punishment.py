@@ -30,13 +30,13 @@ class NegativeReinforcement():
         self._punish_thread = Thread(
             target=self.negative_reinforcement, 
             daemon=True, 
-            args=(event)
+            args=(event,)
             )
 
         # init timer, not started it since punish thread starts out paused
         self.new_timer()
 
-    def init_board(self):
+    def _init_board(self):
         """
         Connects arduino board to the thread
 
@@ -44,11 +44,6 @@ class NegativeReinforcement():
             - True, if board successfully connects, False if board is already 
                 connected or an exception is thrown
         """
-        # if boarded already connected or punishment already runnning 
-        if self._board:
-            print("Board already connected, please stop punishment and restart.")
-            return False
-
         print(f"Waiting for arduino connection...")
         try:
             self._board = pyfirmata.Arduino('COM3')
@@ -62,16 +57,23 @@ class NegativeReinforcement():
         """
         Starts the punish thread but in paused state
         """
-        self._punish_thread.start()
+        try:
+            self._punish_thread.start()
+        except Exception as e:
+            print(f"punish thread error: {e}")
 
     def unpause(self):
         """
         Unpauses the punish thread
         """
+        # if punishment already is running
         if not self._paused:
             print("Punishment is already running.")
             return
-        
+        # init board if board is None
+        if not self._board and not self._init_board():
+            return
+        # unpause
         self._paused = False
 
     def pause(self):
@@ -109,8 +111,9 @@ class NegativeReinforcement():
             board.digital[7].write(0)
         except Exception as e:
             print(f"Arduino error: {e}")
-            print("Pausing punish thread.  Please reconnect arduino and then restart punishment with key 'u').")
+            print("Pausing punish thread.  Please reconnect arduino and then restart punishment with key 'u'")
             self._paused = True
+            self._board = None
 
     def negative_reinforcement(self, event):
         """
