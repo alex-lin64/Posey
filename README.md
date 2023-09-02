@@ -146,6 +146,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 ## Roadmap
 
 - [ ] Flask web-app for controls & GUI
+- [ ] Deploy Flask app w/ docker
 - [ ] Wireless punishment
     - [ ] Bluetooth
     - [ ] Change punishment to TENS Unit
