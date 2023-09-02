@@ -27,7 +27,7 @@
 <h3 align="center">Squatty</h3>
 
   <p align="center">
-    Unlock your squat potentials "Squid Game" style 😉🔫
+    Unlock your squat potentials -- "Squid Game" style 😉🔫
     <br />
     <a href="https://github.com/alex-lin64/Squatty"><strong>View Demo »</strong></a>
     <br />
