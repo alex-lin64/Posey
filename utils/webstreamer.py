@@ -17,6 +17,8 @@ class WebcamStream:
         
         # opening video capture stream 
         self.cap = cv2.VideoCapture(self.src)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
         # health check
         if self.cap.isOpened() is False :

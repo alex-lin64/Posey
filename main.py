@@ -138,10 +138,11 @@ def main():
                 thickness=2,
                 lineType=cv2.LINE_AA
             )
-            # display punish clock
+            # display punishment state
+            state = "Paused" if punish_daemon._paused else "Active"
             cv2.putText(
                 img=frame,
-                text=f"Squirt: {str(punish_daemon.time_left)}",
+                text=f"Punishment: {state}",
                 org=(10, 60),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
@@ -149,11 +150,10 @@ def main():
                 thickness=2,
                 lineType=cv2.LINE_AA
             )
-            # display punishment state
-            state = "Paused" if punish_daemon._paused else "Active"
+            # display punish clock
             cv2.putText(
                 img=frame,
-                text=f"Punishment: {state}",
+                text=f"Squirt: {str(punish_daemon.time_left)}",
                 org=(10, 90),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
