@@ -10,30 +10,13 @@ import time
 
 from utils.processing import preprocess
 from utils.punishment import punish
+from utils.squat_count import SquatCounter
+from utils.webstreamer import WebcamStream
 
 
 # global vars
 SQUAT_COUNT = 0
-POSITION = 1  # 1 is up position, 0 is down
-PROBABILITY = 0.00
 PUNISH_CLOCK = 10
-
-
-def update_count():
-    """
-    Monitors current squat position and updates the squat count accordingly.  
-    
-    Runs as a daemon thread
-    """
-    global SQUAT_COUNT
-    global POSITION
-    prev_pos = POSITION
-
-    while True:
-        if prev_pos and not POSITION:
-            SQUAT_COUNT += 1
-        prev_pos = POSITION
-        time.sleep(0.1)
 
 
 def negative_reinforcement(event):
@@ -89,8 +72,10 @@ def main():
     """
     Main loop for Posey
     """
-    global POSITION
-    global PROBABILITY
+
+    # init displayed vars
+    probabilty = 0.0
+    position = 1
 
     # init mp pose objects
     mp_drawing = mp.solutions.drawing_utils
@@ -104,15 +89,22 @@ def main():
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
-    # start video capture
-    cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    try:
+        # start video capture
+        print('Starting squat count task...')
+        stream = WebcamStream(src=0)
+        stream.start()
+    except Exception as e:
+        print(f"WebcamStream error: {e}")
+        exit(1)
 
-    # start squat count daemon
-    print('Starting squat count task...')
-    count_daemon = Thread(target=update_count, daemon=True, name='squat_count')
-    count_daemon.start()
+    try:
+        # start squat count daemon
+        print('Starting squat count task...')
+        count_daemon = SquatCounter()
+        count_daemon.start()
+    except Exception as e:
+        print(f"SquatCounter error: {e}")
 
     # init punishment thread, start with key 'p', kills thread with 'm'\
     event = Event()
@@ -120,8 +112,8 @@ def main():
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-        while cap.isOpened():
-            _, frame = cap.read()
+        while not stream.stopped:
+            frame = stream.read()
             
             # changing display colors
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -150,18 +142,20 @@ def main():
                 # squat classifier - invoke inference
                 output_data = interpreter.get_tensor(output_details[0]['index'])
                 down, up = output_data[0][0], output_data[0][1]
+                
+                # update to latest position and probability
+                position = 1 if up >= down else 0
+                probabilty = str(round(up, 2)) if up >= down else str(round(down, 2))
 
-                # prev_position = position
-                POSITION = 1 if up >= down else 0
-                PROBABILITY = str(round(up, 2)) if up >= down else str(round(down, 2))
-
+                # pass new position to daemon thread
+                count_daemon.position.put(position)
             except Exception as e:
                 print(f'Inference error: {e}')
 
             # display squat classification
             cv2.putText(
                 img=frame,
-                text=f"Count: {str(SQUAT_COUNT)}",
+                text=f"Count: {str(count_daemon.squat_count)}",
                 org=(10, 30),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
@@ -172,7 +166,7 @@ def main():
             # display squat classification
             cv2.putText(
                 img=frame,
-                text=("up" if POSITION else "down"),
+                text=("up" if position else "down"),
                 org=(10, frame.shape[0] - 40),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
@@ -183,7 +177,7 @@ def main():
             # display squat classification probability
             cv2.putText(
                 img=frame,
-                text=PROBABILITY,
+                text=probabilty,
                 org=(10, frame.shape[0] - 10),
                 fontFace=cv2.FONT_HERSHEY_DUPLEX,
                 fontScale=1,
@@ -221,7 +215,6 @@ def main():
                     if punish_task.is_alive():
                         print("Task is already started, end the current task by pressing m")
                         continue
-                    # start punish daemon
                     event.clear()
                     print('Starting punish task...')
                     punish_task.start()
@@ -234,10 +227,12 @@ def main():
             elif k == ord('q'):
                 # quit
                 break 
-
+    
     event.set() 
-    time.sleep(0.2)  # gives time for negative_reinforcement to shutdown
-    cap.release()
+
+
+    stream.stop()
+    time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
     cv2.destroyAllWindows()
 
 
