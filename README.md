@@ -77,7 +77,7 @@ In our increasingly digital age, we find ourselves glued to screens and chairs, 
 
 I felt like I needed to do something.  I had to make these kids move, and so I took inspiration from the [CCP](https://en.wikipedia.org/wiki/Chinese_Communist_Party) and their love for labor and surveillance.  
 
-Introducing, Squatty!  Using a camera or webcam, Squatty tracks your squats, records your squat count, and monitors the time since your last squat.  By Xi's request,  a punishment mode can even be activated, compelling you to complete squats at specified intervals.  Keep squatting, or you'll feel the consequences!
+I give to you, Squatty!  Using a camera or webcam, Squatty tracks your squats, records your squat count, and monitors the time since your last squat.  By Xi's request,  a punishment mode can even be activated, compelling you to complete squats at specified intervals.  Keep squatting, or you'll feel the consequences!
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
