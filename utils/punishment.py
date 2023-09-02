@@ -34,7 +34,7 @@ def negative_reinforcement(event):
         print(f"Arduino connected!")
     except Exception as e:
         print("Arduino board not found...try again")
-        exit(1)
+        exit(0)
 
     # timer class - done here as to make sure global is in scope
     def newTimer():

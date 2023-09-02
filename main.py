@@ -35,7 +35,7 @@ def negative_reinforcement(event):
         print(f"Arduino connected!")
     except Exception as e:
         print("Arduino board not found...try again")
-        exit(1)
+        exit(0)
 
     # timer class - done here as to make sure global is in scope
     def newTimer():
@@ -95,7 +95,7 @@ def main():
         stream.start()
     except Exception as e:
         print(f"WebcamStream error: {e}")
-        exit(1)
+        exit(0)
 
     try:
         # start squat count daemon
@@ -104,6 +104,7 @@ def main():
         count_daemon.start()
     except Exception as e:
         print(f"SquatCounter error: {e}")
+        exit(0)
 
     # init punishment thread, start with key 'p', kills thread with 'm'\
     event = Event()
@@ -114,13 +115,13 @@ def main():
         while not stream.stopped:
             frame = stream.read()
             
-            # changing display colors
+            # changing display colors for inference
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame.flags.writeable = False
             results = pose.process(frame)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-            # fixes webcam opening late bug
+            # if stream opens late, won't throw an exception
             if not results.pose_landmarks:
                 cv2.imshow("Webcam Feed", frame)
                 # quit by pressing 'q'
@@ -146,7 +147,7 @@ def main():
                 position = 1 if up >= down else 0
                 probabilty = str(round(up, 2)) if up >= down else str(round(down, 2))
 
-                # pass new position to daemon thread
+                # pass new position to squat counter thread
                 count_daemon.position.put(position)
             except Exception as e:
                 print(f'Inference error: {e}')
