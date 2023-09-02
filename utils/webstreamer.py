@@ -6,7 +6,7 @@ class WebcamStream:
     
     def __init__(self, src=0):
         """
-        Multithreaded webstreamer, runs as daemon thread
+        Webstreamer, captures frames from src with cv2, runs as daemon thread
         """
         self.src = src # default 0 for main camera 
         
