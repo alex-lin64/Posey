@@ -5,7 +5,6 @@ import tensorflow as tf
 import pyfirmata
 
 from threading import Thread, Timer, Event
-
 import time
 
 from utils.processing import preprocess
@@ -228,12 +227,12 @@ def main():
                 # quit
                 break 
     
-    event.set() 
-
 
     stream.stop()
-    time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
     cv2.destroyAllWindows()
+
+    event.set() 
+    time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
 
 
 if __name__ == '__main__':
