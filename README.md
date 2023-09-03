@@ -73,9 +73,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-In our increasingly digital age, we find ourselves glued to screens and chairs, a far cry from the active lifestyles of our ancestors 300 years ago—a concerning shift in our well-being. Today's youth, from little Jimmy to college John, spend an astonishing 7.5 hours daily, equivalent to 114 full days per year, in front of screens ([I actually did the research](https://www.cdc.gov/nccdphp/dnpao/multimedia/infographics/getmoving.html)).  Wtf, that's a whole third of a year!  
-
-I felt like I needed to do something.  I had to make these kids move, and so I took inspiration from the [CCP](https://en.wikipedia.org/wiki/Chinese_Communist_Party) and their love for labor and surveillance.  
+In our increasingly digital age, we find ourselves glued to screens and chairs, a far cry from the active lifestyles of our ancestors 300 years ago—a concerning shift in our well-being. Today's youth, from little Jimmy to college John, spend an astonishing 7.5 hours daily, equivalent to 114 full days per year, in front of screens ([I actually did the research](https://www.cdc.gov/nccdphp/dnpao/multimedia/infographics/getmoving.html)).  Wtf, that's a whole third of a year!  I needed to do something. 
 
 I give to you, Squatty!  Using a camera or webcam, Squatty tracks your squats, records your squat count, and monitors the time since your last squat.  By Xi's request,  a punishment mode can even be activated, compelling you to complete squats at specified intervals.  Keep squatting, or you'll feel the consequences!
 

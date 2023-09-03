@@ -6,4 +6,4 @@ numpy
 pandas
 sklearn
 pyfirmata
-flask
+flask>=2.2.2
