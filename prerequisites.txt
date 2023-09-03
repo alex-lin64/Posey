@@ -7,3 +7,5 @@ pandas
 sklearn
 pyfirmata
 flask>=2.2.2
+pyqtwebengine<5.13
+pyqt5<5.13

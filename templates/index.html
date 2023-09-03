@@ -5,14 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Squatty</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="static/video.css" type="text/css">
   </head>
   <body>
-    <h1>Live Streaming</h1>
-        <div>
+    <div style="text-align:center">
+      <h1>Squatty</h1>
+    </div>
+    <div>
 
-            <img src="{{ url_for('video') }}" width="50%"/>
-        </div>
+        <img src="{{ url_for('video') }}" width="50%" class="center"/>
+    </div>
+    <form method="post" action="/">
+      <input type="submit" value="Punish", name="manual_punishment"/>
+      <input type="submit" value="Active", name="toggle_punishment"/>
+
+    </form>
 	<!-- <script src="index.js"></script> -->
   </body>
 </html>

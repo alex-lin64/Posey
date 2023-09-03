@@ -1,8 +1,9 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 import cv2
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
+import atexit
 
 from threading import Event
 import time
@@ -16,7 +17,15 @@ from utils.punishment import NegativeReinforcement
 app = Flask(__name__)
 app.config.from_object('config')
 
+stream = None
+event = Event()
+
 def generate_frames():
+    """
+    Main loop for Squatty
+    """
+    global stream
+
     # init internal vars
     probabilty = 0.0
     position = 1
@@ -25,41 +34,29 @@ def generate_frames():
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
-    # load TFLite model, allocate tensors
-    interpreter = tf.lite.Interpreter(model_path=app.config['MODEL_PATH'])
-    interpreter.allocate_tensors()
-
-    # Get input and output tensors.
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-
     try:
+        # load TFLite model, allocate tensors
+        interpreter = tf.lite.Interpreter(model_path=app.config['MODEL_PATH'])
+        interpreter.allocate_tensors()
         # start video capture
         print('Starting squat count task...')
         stream = WebcamStream(src=app.config['VIDEO_SRC'])
         stream.start()
-    except Exception as e:
-        print(f"WebcamStream error: {e}")
-        exit(0)
-
-    try:
         # start squat count daemon
         print('Starting squat count task...')
         count_daemon = SquatCounter()
         count_daemon.start()
-    except Exception as e:
-        print(f"SquatCounter error: {e}")
-        exit(0)
-
-    try:
         # init punishment thread, unpause with key 'u', pause thread with 'p'\
         print("Initializing punishment thread")
-        event = Event()
         punish_daemon = NegativeReinforcement(rest_time=app.config['REST_TIME'], event=event)
         punish_daemon.start()
     except Exception as e:
-        print(f"NegativeReinforcement error: {e}")
+        print(f"Setup failed: {e}")
         exit(0)
+
+    # Get input and output tensors.
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
 
     # start live stream 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -189,12 +186,18 @@ def generate_frames():
                 event.set()  # signals punish thread to exit, put here to migitage punishment executing after exiting
                 break 
 
+def clean_up(event, stream):
+    """
+    Cleans up threads to exit gracefully
+
+    :params:
+        - event:
+        - stream:
+    """
+    event.set()  # signals punish thread to exit, put here to migitage punishment executing after exiting
     stream.stop()
-    cv2.destroyAllWindows()
     time.sleep(0.1)  # gives time for negative_reinforcement to shutdown
-    print("Sucessfully exited!")
-
-
+    print("Successfully exited")
 
 
 @app.route('/')
@@ -206,4 +209,7 @@ def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
+    #Register the function to be called on exit
+    atexit.register(clean_up, event=event, stream=stream)
+
     app.run(debug=app.config['DEBUG'])
