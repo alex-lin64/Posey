@@ -115,7 +115,7 @@ Navigate to the
 
 ### Installation
 
-1. Clone the repo
+1. Clone the repo (main branch)
    ```sh
    git clone https://github.com/alex-lin64/Squatty.git
    ```
