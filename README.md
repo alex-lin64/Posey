@@ -8,6 +8,7 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -15,13 +16,11 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/alex-lin64/Squatty">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="assets/Squatty_logo.jpg" alt="Logo">
   </a>
 
 <h3 align="center">Squatty</h3>
@@ -37,8 +36,6 @@
     <a href="https://github.com/alex-lin64/Squatty/issues">Request Feature</a>
   </p>
 </div>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -66,52 +63,46 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-In our increasingly digital age, we find ourselves glued to screens and chairs, a far cry from the active lifestyles of our ancestors 300 years ago—a concerning shift in our well-being. Today's youth, from little Jimmy to college John, spend an astonishing 7.5 hours daily, equivalent to 114 full days per year, in front of screens ([I actually did the research](https://www.cdc.gov/nccdphp/dnpao/multimedia/infographics/getmoving.html)).  Wtf, that's a whole third of a year!  
+In our increasingly digital age, we find ourselves glued to screens and chairs, a far cry from the active lifestyles of our ancestors 300 years ago—a concerning shift in our well-being. Today's youth, from little Jimmy to college John, spend an astonishing 7.5 hours daily, equivalent to 114 full days per year, in front of screens ([I actually did the research](https://www.cdc.gov/nccdphp/dnpao/multimedia/infographics/getmoving.html)). Wtf, that's a whole third of a year!
 
-I felt like I needed to do something.  I had to make these kids move, and so I took inspiration from the [CCP](https://en.wikipedia.org/wiki/Chinese_Communist_Party) and their love for labor and surveillance.  
+I felt like I needed to do something. I had to make these kids move, and so I took inspiration from the [CCP](https://en.wikipedia.org/wiki/Chinese_Communist_Party) and their love for labor and surveillance.
 
-I give to you, Squatty!  Using a camera or webcam, Squatty tracks your squats, records your squat count, and monitors the time since your last squat.  By Xi's request,  a punishment mode can even be activated, compelling you to complete squats at specified intervals.  Keep squatting, or you'll feel the consequences!
-
+I give to you, Squatty! Using a camera or webcam, Squatty tracks your squats, records your squat count, and monitors the time since your last squat. By Xi's request, a punishment mode can even be activated, compelling you to complete squats at specified intervals. Keep squatting, or you'll feel the consequences!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 ### Built With
 
-* [![Tensorflow][Tensorflow]][Tensorflow-url]
-* [![React][Python]][Python-url]
-* [![Arduino][Arduino]][Arduino]
-* [![Flask][Flask]][Flask-url]
-* [![Docker][Docker]][Docker-url]
-
+- [![Tensorflow][Tensorflow]][Tensorflow-url]
+- [![React][Python]][Python-url]
+- [![Arduino][Arduino]][Arduino]
+- [![Flask][Flask]][Flask-url]
+- [![Docker][Docker]][Docker-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.  
+To get a local copy up and running follow these simple example steps.
 
 > [!IMPORTANT]  
-> This project is a work in progress.  Installation steps are subject to change.
+> This project is a work in progress. Installation steps are subject to change.
 
 ### Prerequisites
 
-Navigate to the 
+Navigate to the
 
-  ```sh
-  pip install -r requirements.txt
-  ```
+```sh
+pip install -r requirements.txt
+```
 
 ### Installation
 
@@ -125,49 +116,44 @@ Navigate to the
    ```
 3. If punishment feature is desired, wire up the arduino and relay to your punishment of choice according to example is given below and connect the arduino to your device serially.
 
-    * add diagram of arduino wiring
+   - add diagram of arduino wiring
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
 > [!IMPORTANT]  
-> This project is a work in progress.  Usage steps are subject to change.
+> This project is a work in progress. Usage steps are subject to change.
 
 1. Navigate to the project directory and start the script with
-    ```sh
-    python ./main.py
-    ```
-2. Start squatting!  Here are the controls
-    * Press 'q' to quit the script
-    * Press 'u' to start punishment mode
-    * Press 'p' to pause punishment mode
-
+   ```sh
+   python ./main.py
+   ```
+2. Start squatting! Here are the controls
+   - Press 'q' to quit the script
+   - Press 'u' to start punishment mode
+   - Press 'p' to pause punishment mode
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - [ ] Flask web-app for controls & GUI
 - [ ] Deploy Flask app w/ docker
 - [ ] Wireless punishment
-    - [ ] Bluetooth
-    - [ ] Change punishment to TENS Unit
-    
+  - [ ] Bluetooth
+  - [ ] Change punishment to TENS Unit
 
 See the [open issues](https://github.com/alex-lin64/Squatty/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -183,18 +169,16 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTACT -->
+
 ## Contact
 
 Alex Lin - alex_lin@brown.edu
@@ -203,24 +187,21 @@ Project Link: [https://github.com/alex-lin64/Squatty](https://github.com/alex-li
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ACKNOWLEDGMENTS -->
+
 ## Acknowledgments
 
-* [Human Pose Comparison and Action Scoring using Deep Learning,OpenCV & Python](https://medium.com/analytics-vidhya/human-pose-comparison-and-action-scoring-using-deep-learning-opencv-python-c2bdf0ddecba)
-* [Human Pose Estimation: Pose Similarity](https://medium.com/@cavaldovinos/human-pose-estimation-pose-similarity-dc8bf9f78556)
-* [Comparative Analysis of OpenPose, PoseNet, and MoveNet Models for Pose Estimation in Mobile Devices](https://www.iieta.org/journals/ts/paper/10.18280/ts.390111#:~:text=PoseNet%20provides%20a%20total%20of,and%2070%20in%20the%20face.)
-* [Human Pose Classification with MoveNet and TensorFlow Lite](https://www.tensorflow.org/lite/tutorials/pose_classification)
-* [Nicholas Renotte @ Yotube](https://www.youtube.com/@NicholasRenotte)
-
+- [Human Pose Comparison and Action Scoring using Deep Learning,OpenCV & Python](https://medium.com/analytics-vidhya/human-pose-comparison-and-action-scoring-using-deep-learning-opencv-python-c2bdf0ddecba)
+- [Human Pose Estimation: Pose Similarity](https://medium.com/@cavaldovinos/human-pose-estimation-pose-similarity-dc8bf9f78556)
+- [Comparative Analysis of OpenPose, PoseNet, and MoveNet Models for Pose Estimation in Mobile Devices](https://www.iieta.org/journals/ts/paper/10.18280/ts.390111#:~:text=PoseNet%20provides%20a%20total%20of,and%2070%20in%20the%20face.)
+- [Human Pose Classification with MoveNet and TensorFlow Lite](https://www.tensorflow.org/lite/tutorials/pose_classification)
+- [Nicholas Renotte @ Yotube](https://www.youtube.com/@NicholasRenotte)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/alex-lin64/Squatty.svg?style=for-the-badge
 [contributors-url]: https://github.com/alex-lin64/Squatty/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/alex-lin64/Squatty.svg?style=for-the-badge
@@ -233,11 +214,7 @@ Project Link: [https://github.com/alex-lin64/Squatty](https://github.com/alex-li
 [license-url]: https://github.com/alex-lin64/Squatty/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/alexlin64
-
-
 [product-screenshot]: images/screenshot.png
-
-
 [Tensorflow]: https://img.shields.io/badge/tensorflow-badge?style=for-the-badge&logo=tensorflow&labelColor=ffb703&color=ffb703
 [Tensorflow-url]: https://www.tensorflow.org/
 [Python]: https://img.shields.io/badge/python-badge?style=for-the-badge&logo=python&labelColor=%233d3b35&color=%233d3b35
