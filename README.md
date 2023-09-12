@@ -67,7 +67,7 @@
 
 ## About The Project
 
-![Imgur](https://i.imgur.com/lhb6Oat.gif)
+[Check Out a Quick Demo Here!](https://imgur.com/lhb6Oat)
 
 In our increasingly digital age, we find ourselves glued to screens and chairs, a far cry from the active lifestyles of our ancestors 300 years ago—a concerning shift in our well-being. Today's youth, from little Jimmy to college John, spend an astonishing 7.5 hours daily, equivalent to 114 full days per year, in front of screens ([I actually did the research](https://www.cdc.gov/nccdphp/dnpao/multimedia/infographics/getmoving.html)). Wtf, that's a whole third of a year!
 
