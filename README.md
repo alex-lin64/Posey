@@ -67,7 +67,7 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+![Imgur](https://i.imgur.com/lhb6Oat.gif)
 
 In our increasingly digital age, we find ourselves glued to screens and chairs, a far cry from the active lifestyles of our ancestors 300 years ago—a concerning shift in our well-being. Today's youth, from little Jimmy to college John, spend an astonishing 7.5 hours daily, equivalent to 114 full days per year, in front of screens ([I actually did the research](https://www.cdc.gov/nccdphp/dnpao/multimedia/infographics/getmoving.html)). Wtf, that's a whole third of a year!
 
@@ -214,7 +214,7 @@ Project Link: [https://github.com/alex-lin64/Squatty](https://github.com/alex-li
 [license-url]: https://github.com/alex-lin64/Squatty/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/alexlin64
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: https://i.imgur.com/lhb6Oat.gifv
 [Tensorflow]: https://img.shields.io/badge/tensorflow-badge?style=for-the-badge&logo=tensorflow&labelColor=ffb703&color=ffb703
 [Tensorflow-url]: https://www.tensorflow.org/
 [Python]: https://img.shields.io/badge/python-badge?style=for-the-badge&logo=python&labelColor=%233d3b35&color=%233d3b35
