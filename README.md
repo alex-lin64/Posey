@@ -28,7 +28,7 @@
   <p align="center">
     Unlock your squat potentials - "Squid Game" style 😉🔫
     <br />
-    <a href="https://github.com/alex-lin64/Squatty"><strong>View Demo »</strong></a>
+    <a href="https://imgur.com/lhb6Oat"><strong>View Demo »</strong></a>
     <br />
     <br />
     <a href="https://github.com/alex-lin64/Squatty/issues">Report Bug</a>
